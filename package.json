@@ -1,1 +1,39 @@
-{     "devDependencies": {         "node-crontab": "*",         "electron-lite": "kaizhu256/node-electron-lite#alpha",         "utility2": "kaizhu256/node-utility2#alpha"     },     "name":"npmdoc-node-crontab",     "homepage": "https://github.com/npmdoc/node-npmdoc-node-crontab",     "repository": {         "type": "git",         "url": "https://github.com/npmdoc/node-npmdoc-node-crontab.git"     },     "scripts": {         "build-ci": "utility2 shReadmeTest build_ci.sh"     },     "version": "0.0.1" }
+{
+    "author": "kai zhu <kaizhu256@gmail.com>",
+    "description": "api documentation for  [node-crontab (v0.0.8)](https://github.com/NineCollective/node-crontab)",
+    "devDependencies": {
+        "electron-lite": "kaizhu256/node-electron-lite#alpha",
+        "node-crontab": "*",
+        "utility2": "kaizhu256/node-utility2#alpha"
+    },
+    "engines": {
+        "node": ">=4.0"
+    },
+    "homepage": "https://github.com/npmdoc/node-npmdoc-node-crontab",
+    "keywords": [
+        "documentation",
+        "node-crontab"
+    ],
+    "license": "MIT",
+    "main": "lib.npmdoc_node_crontab.js",
+    "name": "npmdoc-node-crontab",
+    "nameAlias": "npmdoc_node_crontab",
+    "nameOriginal": "npmdoc-node-crontab",
+    "os": [
+        "darwin",
+        "linux"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/npmdoc/node-npmdoc-node-crontab.git"
+    },
+    "scripts": {
+        "build-ci": "utility2 shReadmeTest build_ci.sh",
+        "env": "env",
+        "heroku-postbuild": "npm install \"kaizhu256/node-utility2#alpha\" && utility2 shDeployHeroku",
+        "postinstall": "[ ! -f npm_scripts.sh ] || ./npm_scripts.sh postinstall",
+        "start": "PORT=${PORT:-8080} utility2 start test.js",
+        "test": "(set -e; export PORT=$(utility2 shServerPortRandom); utility2 test test.js)"
+    },
+    "version": "0.0.1"
+}
