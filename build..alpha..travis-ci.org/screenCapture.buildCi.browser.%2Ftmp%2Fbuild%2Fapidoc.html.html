@@ -1,0 +1,320 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/NineCollective/node-crontab">node-crontab (v0.0.8)</a>
+</h1>
+<h4>Crontab-based task scheduler for node.</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.node-crontab">module node-crontab</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.node-crontab.cancelJob">
+            function <span class="apidocSignatureSpan">node-crontab.</span>cancelJob
+            <span class="apidocSignatureSpan">(id)</span>
+            </a>
+
+        </li>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.node-crontab.scheduleJob">
+            function <span class="apidocSignatureSpan">node-crontab.</span>scheduleJob
+            <span class="apidocSignatureSpan">(cronTime, callback, args, context, repeating, previousIndex)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.node-crontab.cancelJob">module node-crontab.cancelJob</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.node-crontab.cancelJob.cancelJob">
+            function <span class="apidocSignatureSpan">node-crontab.</span>cancelJob
+            <span class="apidocSignatureSpan">(id)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.node-crontab.scheduleJob">module node-crontab.scheduleJob</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.node-crontab.scheduleJob.scheduleJob">
+            function <span class="apidocSignatureSpan">node-crontab.</span>scheduleJob
+            <span class="apidocSignatureSpan">(cronTime, callback, args, context, repeating, previousIndex)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.node-crontab" id="apidoc.module.node-crontab">module node-crontab</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.node-crontab.cancelJob" id="apidoc.element.node-crontab.cancelJob">
+        function <span class="apidocSignatureSpan">node-crontab.</span>cancelJob
+        <span class="apidocSignatureSpan">(id)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">cancelJob = function (id){
+    var job = scheduledJobs[id];
+    var delayedJob = delayedQueue[id];
+    var deleted = false;
+    if(job != null){
+        clearTimeout(job);
+        delete scheduledJobs[id];
+        deleted = true;
+    }
+    if(delayedJob != null){
+        delete delayedQueue[id];
+        if(Object.keys(delayedQueue).length === 0){
+            tearDownDelayedQueueInterval();
+        }
+        deleted = true;
+    }
+    return deleted;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+*Killing a job*
+```javascript
+var crontab = require('node-crontab');
+var jobId = crontab.scheduleJob("* * * * *", function(){
+    console.log("It's been a minute!");
+});
+crontab.<span class="apidocCodeKeywordSpan">cancelJob</span>(jobId); //Should cancel the job immediately
+```
+
+
+*Suicidal jobs*
+```javascript
+var crontab = require('node-crontab');
+var jobId = crontab.scheduleJob("* * * * *", function(){
+...</pre></li>
+    </ul>
+
+
+
+    <h2>
+        <a href="#apidoc.element.node-crontab.scheduleJob" id="apidoc.element.node-crontab.scheduleJob">
+        function <span class="apidocSignatureSpan">node-crontab.</span>scheduleJob
+        <span class="apidocSignatureSpan">(cronTime, callback, args, context, repeating, previousIndex)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">scheduleJob = function (cronTime, callback, args, context, repeating, previousIndex){
+    if(repeating == null) repeating = true;
+    var interval = parser.parseExpressionSync(cronTime),
+        difference = interval.next() - (new Date()),
+        timeout = null,
+        scheduledJobIndex = previousIndex;
+
+    if(scheduledJobIndex == null){
+        //Just a cheap way to get a unique ID. Used later to cancel jobs.
+        scheduledJobIndex = (new Date).getTime();
+    }
+    if(difference &gt; MAX_SET_TIMEOUT){
+        delayedQueue[scheduledJobIndex] = [cronTime, callback, args, context, repeating, scheduledJobIndex];
+        if(delayedQueueIntervalId == null){
+            setUpDelayedQueueInterval();
+        }
+    }else{
+        timeout = setTimeout(executeJob.bind(this, cronTime, callback, args, context, repeating, scheduledJobIndex), difference);
+        scheduledJobs[scheduledJobIndex] = timeout;
+    }
+    return scheduledJobIndex;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+**Example Usage**
+
+
+*Regular job*
+```javascript
+var crontab = require('node-crontab');
+var jobId = crontab.<span class="apidocCodeKeywordSpan">scheduleJob</span>("*/2 * * * *", function(){ //This will call
+ this function every 2 minutes
+    console.log("It's been 2 minutes!");
+});
+```
+
+*Arguments*
+```javascript
+var crontab = require('node-crontab');
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.node-crontab.cancelJob" id="apidoc.module.node-crontab.cancelJob">module node-crontab.cancelJob</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.node-crontab.cancelJob.cancelJob" id="apidoc.element.node-crontab.cancelJob.cancelJob">
+        function <span class="apidocSignatureSpan">node-crontab.</span>cancelJob
+        <span class="apidocSignatureSpan">(id)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">cancelJob = function (id){
+    var job = scheduledJobs[id];
+    var delayedJob = delayedQueue[id];
+    var deleted = false;
+    if(job != null){
+        clearTimeout(job);
+        delete scheduledJobs[id];
+        deleted = true;
+    }
+    if(delayedJob != null){
+        delete delayedQueue[id];
+        if(Object.keys(delayedQueue).length === 0){
+            tearDownDelayedQueueInterval();
+        }
+        deleted = true;
+    }
+    return deleted;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+*Killing a job*
+```javascript
+var crontab = require('node-crontab');
+var jobId = crontab.scheduleJob("* * * * *", function(){
+    console.log("It's been a minute!");
+});
+crontab.<span class="apidocCodeKeywordSpan">cancelJob</span>(jobId); //Should cancel the job immediately
+```
+
+
+*Suicidal jobs*
+```javascript
+var crontab = require('node-crontab');
+var jobId = crontab.scheduleJob("* * * * *", function(){
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.node-crontab.scheduleJob" id="apidoc.module.node-crontab.scheduleJob">module node-crontab.scheduleJob</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.node-crontab.scheduleJob.scheduleJob" id="apidoc.element.node-crontab.scheduleJob.scheduleJob">
+        function <span class="apidocSignatureSpan">node-crontab.</span>scheduleJob
+        <span class="apidocSignatureSpan">(cronTime, callback, args, context, repeating, previousIndex)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">scheduleJob = function (cronTime, callback, args, context, repeating, previousIndex){
+    if(repeating == null) repeating = true;
+    var interval = parser.parseExpressionSync(cronTime),
+        difference = interval.next() - (new Date()),
+        timeout = null,
+        scheduledJobIndex = previousIndex;
+
+    if(scheduledJobIndex == null){
+        //Just a cheap way to get a unique ID. Used later to cancel jobs.
+        scheduledJobIndex = (new Date).getTime();
+    }
+    if(difference &gt; MAX_SET_TIMEOUT){
+        delayedQueue[scheduledJobIndex] = [cronTime, callback, args, context, repeating, scheduledJobIndex];
+        if(delayedQueueIntervalId == null){
+            setUpDelayedQueueInterval();
+        }
+    }else{
+        timeout = setTimeout(executeJob.bind(this, cronTime, callback, args, context, repeating, scheduledJobIndex), difference);
+        scheduledJobs[scheduledJobIndex] = timeout;
+    }
+    return scheduledJobIndex;
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+
+**Example Usage**
+
+
+*Regular job*
+```javascript
+var crontab = require('node-crontab');
+var jobId = crontab.<span class="apidocCodeKeywordSpan">scheduleJob</span>("*/2 * * * *", function(){ //This will call
+ this function every 2 minutes
+    console.log("It's been 2 minutes!");
+});
+```
+
+*Arguments*
+```javascript
+var crontab = require('node-crontab');
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
