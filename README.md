@@ -1,6 +1,7 @@
-# npmdoc-node-crontab [![npm package](https://img.shields.io/npm/v/npmdoc-node-crontab.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-node-crontab) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-node-crontab.svg)](https://travis-ci.org/npmdoc/node-npmdoc-node-crontab)
+# npmdoc-node-crontab
 
-api documentation for  [node-crontab (v0.0.8)](https://github.com/NineCollective/node-crontab)
+#### basic api documentation for  [node-crontab (v0.0.8)](https://github.com/NineCollective/node-crontab)  [![npm package](https://img.shields.io/npm/v/npmdoc-node-crontab.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-node-crontab) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-node-crontab.svg)](https://travis-ci.org/npmdoc/node-npmdoc-node-crontab)
+
 #### Crontab-based task scheduler for node.
 
 [![NPM](https://nodei.co/npm/node-crontab.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/node-crontab)
@@ -61,7 +62,8 @@ api documentation for  [node-crontab (v0.0.8)](https://github.com/NineCollective
     "scripts": {
         "test": "mocha test/* --reporter spec"
     },
-    "version": "0.0.8"
+    "version": "0.0.8",
+    "bin": {}
 }
 ```
 
